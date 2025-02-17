@@ -369,14 +369,13 @@ void encoderA_Mode0() {  //volume
   if (newPos != positionEncoderA && newPos < positionEncoderA) {
     positionEncoderA = newPos;
     //Decrease Volume
-    Keyboard.print('a');
+    Consumer.write(MEDIA_VOL_DOWN);
   }
 
   if (newPos != positionEncoderA && newPos > positionEncoderA) {
     positionEncoderA = newPos;
     //Increase Volume
-    //Consumer.write(MEDIA_VOL_UP);
-    Keyboard.print('b');
+    Consumer.write(MEDIA_VOL_UP);
   }
 }
 
