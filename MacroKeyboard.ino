@@ -69,7 +69,7 @@ const byte COLS = 4;  //four columns
 #include <Encoder.h>
 //Library for simple interfacing with encoders (up to two)
 //low performance ender response, pins do not have interrupts
-Encoder RotaryEncoderA(14, 15);  //the LEFT encoder (encoder A)
+Encoder RotaryEncoderA(10, 16);  //the LEFT encoder (encoder A)
 
 #include <Adafruit_NeoPixel.h>  //inclusion of Adafruit's NeoPixel (RBG addressable LED) library
 
@@ -107,8 +107,8 @@ int lastButtonState = 0;  // previous state of the button
 
 long positionEncoderA = -999;  //encoderA LEFT position variable
 
-const int ModeButton = A0;  // the pin that the Modebutton is attached to
-const int pot = A1;         // pot for adjusting attract mode demoTime or mouseMouse pixel value
+const int modeButton = A0;    // the pin that the Modebutton is attached to
+const int pot = A1;           // pot for adjusting attract mode demoTime or mouseMouse pixel value
 //const int Mode1= A2;
 //const int Mode2= A3; //Mode status LEDs
 
@@ -117,6 +117,7 @@ byte colPins[COLS] = { 6, 7, 8, 9 };  //connect to the column pinouts of the key
 Keypad keypad = Keypad(makeKeymap(keys), rowPins, colPins, ROWS, COLS);
 
 void setup() {
+  pinMode(modeButton, INPUT_PULLUP);
   pixels.begin();
   Consumer.begin();
   Serial.begin(9600);
@@ -283,19 +284,17 @@ void setColorsModeClear() {
 }
 
 void checkModeButton() {
-  buttonState = digitalRead(ModeButton);
-  if (buttonState != lastButtonState) {
-    if (buttonState == LOW) {
+  buttonState = digitalRead( modeButton);
+  if (buttonState != lastButtonState) { // compare the buttonState to its previous state
+    if (buttonState == LOW) { // if the state has changed, increment the counter
+      // if the current state is LOW then the button cycled:
       modePushCounter++;
-      Serial.println("pressed");
-      Serial.print("number of button pushes: ");
-      Serial.println(modePushCounter);
       colorUpdate = 0;  // set the color change flag ONLY when we know the mode button has been pressed. Saves processor resources from updating the neoPixel colors all the time
     }
     delay(50);  // Delay a little bit to avoid bouncing
   }
-  lastButtonState = buttonState;
-  if (modePushCounter > 1) {  //reset the counter after 2 presses CHANGE THIS FOR MORE MODES
+  lastButtonState = buttonState;  // save the current state as the last state, for next time through the loop
+  if (modePushCounter >1) {       //reset the counter after 4 presses CHANGE THIS FOR MORE MODES
     modePushCounter = 0;
   }
 }
