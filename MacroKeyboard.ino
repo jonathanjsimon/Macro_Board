@@ -62,25 +62,23 @@
 
 #include <HID-Project.h>
 #include <Keypad.h>
+#include <Encoder.h>
+#include <Adafruit_NeoPixel.h>
+
+#define PIN A2  //defines LED's 
+#define NUMPIXELS 13
 
 const byte ROWS = 3;  //four rows
 const byte COLS = 4;  //four columns
 
-#include <Encoder.h>
-//Library for simple interfacing with encoders (up to two)
-//low performance ender response, pins do not have interrupts
 Encoder RotaryEncoderA(10, 16);  //the LEFT encoder (encoder A)
 
-#include <Adafruit_NeoPixel.h>  //inclusion of Adafruit's NeoPixel (RBG addressable LED) library
 
-#define PIN A2
-#define NUMPIXELS 13
 
 Adafruit_NeoPixel pixels = Adafruit_NeoPixel(NUMPIXELS, PIN, NEO_GRB + NEO_KHZ800);
 int colorUpdate = 0;  //setting a flag to only update colors once when the mode is switched.
 const int b = 3;      // Brightness control variable. Used to divide the RBG vales set for the RGB LEDs. full range is 0-255. 255 is super bright
                       // In fact 255 is obnoxiously bright, so this use this variable to reduce the value. It also reduces the current draw on the USB
-
 
 char keys[ROWS][COLS] = {
   { '1', '2', '3', '4' },
@@ -101,14 +99,14 @@ char keys[ROWS][COLS] = {
 
 
 // Variables that will change:
-int modePushCounter = 0;  // counter for the number of button presses
+int modePushCounter = 1;  // counter for the number of button presses
 int buttonState = 0;      // current state of the button
 int lastButtonState = 0;  // previous state of the button
 
 long positionEncoderA = -999;  //encoderA LEFT position variable
 
-const int modeButton = A0;    // the pin that the Modebutton is attached to
-const int pot = A1;           // pot for adjusting attract mode demoTime or mouseMouse pixel value
+const int modeButton = A0;  // the pin that the Modebutton is attached to
+const int pot = A1;         // pot for adjusting attract mode demoTime or mouseMouse pixel value
 //const int Mode1= A2;
 //const int Mode2= A3; //Mode status LEDs
 
@@ -284,9 +282,9 @@ void setColorsModeClear() {
 }
 
 void checkModeButton() {
-  buttonState = digitalRead( modeButton);
-  if (buttonState != lastButtonState) { // compare the buttonState to its previous state
-    if (buttonState == LOW) { // if the state has changed, increment the counter
+  buttonState = digitalRead(modeButton);
+  if (buttonState != lastButtonState) {  // compare the buttonState to its previous state
+    if (buttonState == LOW) {            // if the state has changed, increment the counter
       // if the current state is LOW then the button cycled:
       modePushCounter++;
       colorUpdate = 0;  // set the color change flag ONLY when we know the mode button has been pressed. Saves processor resources from updating the neoPixel colors all the time
@@ -294,7 +292,7 @@ void checkModeButton() {
     delay(50);  // Delay a little bit to avoid bouncing
   }
   lastButtonState = buttonState;  // save the current state as the last state, for next time through the loop
-  if (modePushCounter >1) {       //reset the counter after 4 presses CHANGE THIS FOR MORE MODES
+  if (modePushCounter > 1) {      //reset the counter after 4 presses CHANGE THIS FOR MORE MODES
     modePushCounter = 0;
   }
 }
@@ -341,19 +339,19 @@ void setColorsMode0() {
 
 void setColorsMode1() {
   if (colorUpdate == 0) {
-    pixels.setPixelColor(0, pixels.Color(51, 102, 0));
-    pixels.setPixelColor(1, pixels.Color(0, 0, 150));
-    pixels.setPixelColor(2, pixels.Color(0, 150, 0));
-    pixels.setPixelColor(3, pixels.Color(150, 0, 0));
-    pixels.setPixelColor(4, pixels.Color(220, 0, 200));
-    pixels.setPixelColor(5, pixels.Color(150, 0, 150));
-    pixels.setPixelColor(6, pixels.Color(150, 0, 150));
-    pixels.setPixelColor(7, pixels.Color(80, 102, 0));
-    pixels.setPixelColor(8, pixels.Color(80, 102, 0));
-    pixels.setPixelColor(9, pixels.Color(5, 5, 100));
-    pixels.setPixelColor(10, pixels.Color(5, 5, 100));
-    pixels.setPixelColor(11, pixels.Color(102, 5, 0));
-    pixels.setPixelColor(12, pixels.Color(80, 102, 0));
+    pixels.setPixelColor(0, pixels.Color(100, 100, 100));
+    pixels.setPixelColor(1, pixels.Color(0, 0, 0));
+    pixels.setPixelColor(2, pixels.Color(150, 0, 0));
+    pixels.setPixelColor(3, pixels.Color(102, 60, 0));
+    pixels.setPixelColor(4, pixels.Color(0, 0, 150));
+    pixels.setPixelColor(5, pixels.Color(150, 10, 150));
+    pixels.setPixelColor(6, pixels.Color(150, 10, 150));
+    pixels.setPixelColor(7, pixels.Color(150, 10, 150));
+    pixels.setPixelColor(8, pixels.Color(150, 10, 150));
+    pixels.setPixelColor(9, pixels.Color(150, 150, 150));
+    pixels.setPixelColor(10, pixels.Color(150, 5, 0));
+    pixels.setPixelColor(11, pixels.Color(102, 60, 0));
+    pixels.setPixelColor(12, pixels.Color(80, 250, 0));
     pixels.show();
     colorUpdate = 1;
   }
