@@ -30,14 +30,14 @@ Due to the hardware changes, I removed LiquidCrystal_I2C, any references to that
 
 I used HID-Project rather than the Keyboard and Mouse libraries. HID-Project is much more flexable in what it is capable of. It allows you to send non keyboard/mouse specific HID commands. I am using it here to have the rotary encoder act as a volume knob. I'm sure I'll utalize it much more as I get used to having a macro pad on my desk and come up with some better ideas.
 
-##Planned Updates
+## Planned Updates
 
-###Add an LED Dimmer
+### Add an LED Dimmer
 Add an LED dimmer multi-key command.
 When certain keys are pressed at the same time, put the keypad in a special mode that allows the user to set the brigtness control variable. use the rotary encoder to play with the value, use the keys for presets. exit the mode by pressing the rotary encoder.
 
-###Add Home Assistant support
+### Add Home Assistant support
 Add support for Home Assistant so that I can call scenes and automations from the keypad.
 
-###Add Event Support
+### Add Event Support
 This is a stretch goal. I'd love to add event support such that when a specific program opens, the macropad receives an event and will change to a specific mode for that program. The easiest way to do this for my setup will be to write a wrapper script that sends an event to the arduino and opens the program for each program I would like to do this with, however I am looking into more generic solutions.
