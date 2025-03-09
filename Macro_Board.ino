@@ -143,7 +143,7 @@ void loop() {
             delay(100);
             Keyboard.release(KEY_LEFT_CTRL);
             delay(100);
-            Keyboard.println("10.0.0.10:8123");
+            Keyboard.println("http://10.0.0.10:8123/lovelace/default_view");
             break;
           case '5':
             Keyboard.press(KEY_LEFT_CTRL);
