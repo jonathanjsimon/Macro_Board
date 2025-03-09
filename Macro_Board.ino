@@ -1,7 +1,6 @@
 /***************************************************************************************************************
-* David's Super Special Awesome Macro Keyboard
+* David's Macro Keyboard Build
 * Based on Ryan Bates sample code written for MacroKeyboardV2
-* Removed all references to LCD and to Encoder B, customized macros
 * 
 * Ryan's Info:
 * github project: https://github.com/retrobuiltRyan/MacroKeyboardV2
@@ -9,51 +8,6 @@
 * youtube: https://www.youtube.com/c/ryanbatesrbg
 * twitter: @retrobuiltgames
 * Buy Ryan's PCB at https://www.tindie.com/products/19957/
-* 
-*Ryan's Pro Tips:
-*=============== Keyboard Control================================================================================
-*Keyboard.write();   Sends a keystroke to a connected computer. 
-*                    This is similar to pressing and releasing a key on your keyboard.
-*                    Will send a shift command if applicable. Example: Keyboard.write('K') will 
-*                    automatically do SHIFT + k. 
-*                    Can also accept ASCII code like this:
-*                    //Keyboard.write(32); // This is space bar (in decimal)
-*                    Helpful list of ASCII + decimal keys http://www.asciitable.com/
-*                    
-*
-*Keyboard.press();   Best for holding down a key with multi-key commands; like copy/ paste
-*                    This example is [ctrl] + [shift] + [e] 
-*                      //Keyboard.press(KEY_LEFT_CTRL);
-*                      //Keyboard.press(KEY_LEFT_SHIFT);
-*                      //Keyboard.press('e'); 
-*                      //delay(100); Keyboard.releaseAll();
-*                
-*
-*Keyboard.print();   Sends a keystroke(s)
-*                    Keyboard.print("stop using aim bot"); // types this in as a char or int! (not a string)!
-*
-*
-*Keyboard.println(); Sends a keystroke followed by a newline (carriage return)
-*                     Very practical if you want to type a password and login in one button press!
-*                     
-*SOMETIMES, applications are coded to recognize Keyboard.press() and not Keyboard.write() and vice versa.
-*You might have to experiment. 
-*
-*=============== Mouse Control================================================================================
-*Mouse.move(x, y, wheel);  Moves the mouse and or scroll wheel up/down left/right.
-*                          Range is -128 to +127. units are pixels 
-*                          -number = left or down
-*                          +number = right or up
-*
-*Mouse.press(b);         Presses the mouse button (still need to call release). Replace "b" with:
-*                        MOUSE_LEFT   //Left Mouse button
-*                        MOUSE_RIGHT  //Right Mouse button
-*                        MOUSE_MIDDLE //Middle mouse button
-*                        MOUSE_ALL    //All three mouse buttons
-*                        
-*Mouse.release(b);       Releases the mouse button.
-*
-*Mouse.click(b);         A quick press and release.
 ***************************************************************************************************************/
 
 //=============== Setup  =====================================================
@@ -68,23 +22,26 @@
 #define PIN A2  //defines LED's 
 #define NUMPIXELS 13
 
-const byte ROWS = 3;  //four rows
-const byte COLS = 4;  //four columns
-
 Encoder RotaryEncoderA(10, 16);  //the LEFT encoder (encoder A)
-
-
 
 Adafruit_NeoPixel pixels = Adafruit_NeoPixel(NUMPIXELS, PIN, NEO_GRB + NEO_KHZ800);
 int colorUpdate = 0;  //setting a flag to only update colors once when the mode is switched.
 const int b = 3;      // Brightness control variable. Used to divide the RBG vales set for the RGB LEDs. full range is 0-255. 255 is super bright
                       // In fact 255 is obnoxiously bright, so this use this variable to reduce the value. It also reduces the current draw on the USB
 
+const byte ROWS = 3;  //four rows
+const byte COLS = 4;  //four columns
+
 char keys[ROWS][COLS] = {
   { '1', '2', '3', '4' },
   { '5', '6', '7', '8' },
   { '9', '0', 'A', 'B' },
 };
+
+byte rowPins[ROWS] = { 4, 5, A3 };    //connect to the row pinouts of the keypad
+byte colPins[COLS] = { 6, 7, 8, 9 };  //connect to the column pinouts of the keypad
+Keypad keypad = Keypad(makeKeymap(keys), rowPins, colPins, ROWS, COLS);
+
 // The library will return the character inside this array when the appropriate
 // button is pressed then look for that case statement. This is the key assignment lookup table.
 // Layout(key/button order) looks like this
@@ -96,29 +53,21 @@ char keys[ROWS][COLS] = {
 //     |----------------------------|
 
 
-
-
 // Variables that will change:
-int modePushCounter = 1;  // counter for the number of button presses
-int buttonState = 0;      // current state of the button
-int lastButtonState = 0;  // previous state of the button
+int modePushCounter = 1;  // counter for the number of button presses. Value is the starting mode when powered on
+int buttonState = 0;      // current state of the mode button
+int lastButtonState = 0;  // previous state of the mode button
 
 long positionEncoderA = -999;  //encoderA LEFT position variable
 
 const int modeButton = A0;  // the pin that the Modebutton is attached to
-const int pot = A1;         // pot for adjusting attract mode demoTime or mouseMouse pixel value
-//const int Mode1= A2;
-//const int Mode2= A3; //Mode status LEDs
 
-byte rowPins[ROWS] = { 4, 5, A3 };    //connect to the row pinouts of the keypad
-byte colPins[COLS] = { 6, 7, 8, 9 };  //connect to the column pinouts of the keypad
-Keypad keypad = Keypad(makeKeymap(keys), rowPins, colPins, ROWS, COLS);
+
 
 void setup() {
   pinMode(modeButton, INPUT_PULLUP);
   pixels.begin();
   Consumer.begin();
-  Serial.begin(9600);
 }
 
 //=============== Main Loop =====================================================
@@ -362,7 +311,7 @@ void setColorsMode1() {
 //===============================================================================
 
 void encoderA_Mode0() {  //volume
-  long newPos = RotaryEncoderA.read() / 2;
+  long newPos = RotaryEncoderA.read() / 4;
   if (newPos != positionEncoderA && newPos < positionEncoderA) {
     positionEncoderA = newPos;
     //Decrease Volume
@@ -377,7 +326,7 @@ void encoderA_Mode0() {  //volume
 }
 
 void encoderA_Mode1() {
-  long newPos = RotaryEncoderA.read() / 2;
+  long newPos = RotaryEncoderA.read() / 4;
   if (newPos != positionEncoderA && newPos < positionEncoderA) {
     positionEncoderA = newPos;
     //Zoom -
